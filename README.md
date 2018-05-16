@@ -60,9 +60,5 @@ The original datasets were compiled using these datasources:
 • http://sofifa.com/ : players and teams attributes from EA Sports FIFA games. FIFA series and all FIFA assets property of EA
 Sports.
 
-**The Data Processing folder contains files for data processing and feature extraction
-The Data Modeling folder consists of the discussed 4 modelling implementations
-The implementation folder consists of the source code for the flask app created
-The implementation rar file contains the actual distribution package for running this predictive report. **
 ** For further details, the entire project report can be found on this link:
 https://drive.google.com/file/d/1s6hOQy2qrnAsZQEjghq68XPnPs2xUay1/view?usp=sharing **
