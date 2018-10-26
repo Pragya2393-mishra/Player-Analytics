@@ -16,7 +16,6 @@ get_ipython().run_line_magic('matplotlib', 'inline')
 #########################################################################################################################################################################################
 #Retrieving data from SQLite database
 
-
 conn = sqlite3.connect("F:\\DPA\\Project\\database.sqlite")
 cur=conn.cursor()
 table = pd.read_sql_query("SELECT name FROM sqlite_master WHERE type='table'", conn)
@@ -63,6 +62,7 @@ df['Match'].year = year_match
 df['Match'].head(1)
 df['Match'].year[20]
 
+#End of retrieving data from SQLite database
 ########################################################################################################################################################################################################
 
 
@@ -195,6 +195,8 @@ def get_position(x):
 #get_position(94462)
 #get_position(37069)
 #get_position(50160)
+
+#End of function to evaluate average Y-axis coordinate of a player at various time intervals
 ####################################################################################################################################################################################
 
 ####################################################################################################################################################################################
@@ -229,6 +231,8 @@ for i in range(0,len(df['Player_Attributes'])):
 bucket1 = np.array(bucket1,dtype=float)  
 bucket2 = np.array(bucket2,dtype=float)  
 bucket3 = np.array(bucket3,dtype=float)  
+
+#End of calculating bucket810, bucket1013 and bucket1316 for all player IDs
 ###############################################################################################################################################################################################
 
 ###############################################################################################################################################################################################
@@ -274,6 +278,7 @@ fig.savefig('bucket_std1_hist.png')
 plt.close(fig)
 
 # Maximum data points have Standard Deviation between 0 and 0.5. This is tolerable. Hence we go ahead with using bucket_mean1 as the indicator of a player's position from 2008-2016.
+# End of analysing variation of each player's position through time
 ################################################################################################################################################################################################
 
 ################################################################################################################################################################################################
@@ -293,4 +298,5 @@ bucket_mean['kmeans_predict_position'] =np.where((bucket_mean['kmean_predict']==
 bucket_mean.kmeans_predict_position.value_counts()
 bucket_mean.to_csv('F:/Player-Analytics/kmean_predicted_on_bucket_mean.csv')
 
+#End of using k-means clustering to partition data into 4 parts for each position
 ####################################################################################################################################################################################
