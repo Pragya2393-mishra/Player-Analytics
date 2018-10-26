@@ -13,21 +13,18 @@ import datetime
 from IPython import get_ipython
 get_ipython().run_line_magic('matplotlib', 'inline')
 
+#########################################################################################################################################################################################
+#Retrieving data from SQLite database
+
+
 conn = sqlite3.connect("F:\\DPA\\Project\\database.sqlite")
 cur=conn.cursor()
-
-#------------------------------------------------------------------------------------------------------
-
-
-
 table = pd.read_sql_query("SELECT name FROM sqlite_master WHERE type='table'", conn)
 df={}
 for n in table['name']:
     print(n)
     df[n]=pd.read_sql_query("SELECT * from %s" % n, conn)
     df[n].to_csv(n + '.csv', index_label='index')
-    
-#locals().update(df) ------->>> is messing with local namespace a bad idea?? research needed
 print(df.keys())
 
 #retrieves year portion of a date
@@ -45,13 +42,11 @@ for i in range(0, len(df['Player_Attributes'])):
     except:
         year.append(0)
         pass
-
 len(year)
 df['Player_Attributes']['year']=year
 df['Player_Attributes'].year = year
 df['Player_Attributes'].year[20]
 len(df['Player_Attributes'].shape)
-
 
 #Extracts year from "date" column of "Match" and adds it as an additional column "year"
 year_match =[]
@@ -68,7 +63,11 @@ df['Match'].year = year_match
 df['Match'].head(1)
 df['Match'].year[20]
 
-#Evaluate the mean y-axis for each player based on match lineups
+########################################################################################################################################################################################################
+
+
+########################################################################################################################################################################################################
+#Function to evaluate average Y-axis coordinate of a player at various time intervals
 def get_position(x):
    
     data=df['Match'][(df['Match'].year >= 2008) & (df['Match'].year <= 2010)]
@@ -105,15 +104,12 @@ def get_position(x):
     d=d.append(data.away_player_Y10[data.away_player_10==x])
     d=d.append(data.away_player_Y11[data.away_player_11==x])
     
-    
     if len(d) > 0:
                 Y = np.array(d,dtype=np.float)
                 mean_y = np.nanmean(Y)
                 position.append(mean_y)
     else:
         position.append(0)
-             
-    
     print(position)
     print(" ")
     print("calculating for 2010-2013 bucket")
@@ -192,20 +188,21 @@ def get_position(x):
     print(position)
         
     return position
-    
-    
-        
+       
 #Test: (uncomment any below lines to test the function)
 #get_position(36835)    
 #get_position(38788)
 #get_position(94462)
 #get_position(37069)
 #get_position(50160)
-  
+####################################################################################################################################################################################
+
+####################################################################################################################################################################################
 #calculating bucket810, bucket1013 and bucket1316 for all player IDs
-#bucket810: average Y-axis coordinate for all the matches played by the player between 2008 and 2010
-#bucket1013: average Y-axis coordinate for all the matches played by the player between 2010 and 2013
-#bucket1316: average Y-axis coordinate for all the matches played by the player between 2013 and 2016
+#bucket810: Array of y-axis coordinate (position) of each player between 2008 and 2010
+#bucket1013: Array of y-axis coordinate (position) of each player between 2010 and 2013
+#bucket1316: Array of y-axis coordinate (position) of each player between 2013 and 2016
+
 pos=[]
 bucket810 =[]
 bucket1013=[]
@@ -232,11 +229,13 @@ for i in range(0,len(df['Player_Attributes'])):
 bucket1 = np.array(bucket1,dtype=float)  
 bucket2 = np.array(bucket2,dtype=float)  
 bucket3 = np.array(bucket3,dtype=float)  
+###############################################################################################################################################################################################
 
+###############################################################################################################################################################################################
+#Analysing variation of each player's position through time
 
 bucket_mean1=[]
 bucket_std1 =[]
-
 for i in range(0,len(bucket3)):
     arr=[]
     arr_diff=[]
@@ -247,12 +246,9 @@ for i in range(0,len(bucket3)):
     arr_mean = np.nanmean(arr)
     bucket_mean1.append(arr_mean)    
     bucket_std1.append(np.nanstd(arr))
-    arr_diff=np.array(arr_diff,dtype=np.float)
-
-    
+    arr_diff=np.array(arr_diff,dtype=np.float)    
 bucket_mean1[0]
 bucket_std1[0]
-
 
 #Adding bucket1, bucket2, bucket3, bucket_mean1, bucket_std1 to "Player_Attributes" 
 df['Player_Attributes']['bucket810'] = bucket1
@@ -266,18 +262,21 @@ df['Player_Attributes'].to_csv('Player_Attributes_new_v22' + '.csv', index_label
 bucket_mean = pd.read_csv('F:/Player-Analytics/Player_Attributes_v22.csv')
 list(bucket_mean)
 bucket_mean1 = np.array(bucket_mean.bucket_mean1, dtype=np.float64)
-
+bucket_std1 = np.array(bucket_mean.bucket_std1, dtype=np.float64)
 
 fig=plt.figure()
 print('creating subplot')
 ax=fig.add_subplot(111)
 print('creating histogram')
-bp=ax.hist(bucket_mean1, bins =16, color="purple")
+bp=ax.hist(bucket_std1, bins =16, color="purple")
 print('saving figure')
-fig.savefig('bucket_mean1_hist.png')
+fig.savefig('bucket_std1_hist.png')
 plt.close(fig)
 
+# Maximum data points have Standard Deviation between 0 and 0.5. This is tolerable. Hence we go ahead with using bucket_mean1 as the indicator of a player's position from 2008-2016.
+################################################################################################################################################################################################
 
+################################################################################################################################################################################################
 #Using k-means clustering to partition data into 4 parts for each position
 len(bucket_mean1.reshape(-1,1))
 
@@ -293,3 +292,5 @@ bucket_mean['kmeans_predict_position'] =np.where((bucket_mean['kmean_predict']==
 
 bucket_mean.kmeans_predict_position.value_counts()
 bucket_mean.to_csv('F:/Player-Analytics/kmean_predicted_on_bucket_mean.csv')
+
+####################################################################################################################################################################################
